@@ -1,0 +1,43 @@
+import numpy as np
+import scipy.linalg as la
+def CalculateRollProbabilites ():
+    rollProbabilities = [1,2,3,4,5,6,5,4,3,2,1]
+    rollProbabilities = [x / 36 for x in rollProbabilities]
+    return (rollProbabilities)
+
+
+def CreateMatrix (probabilities, matrix, counter, dim):
+    if counter == dim:
+        return (matrix)
+
+    lastElement = probabilities.pop()
+    probabilities = [lastElement] +probabilities
+    matrix[:,counter] = probabilities
+    CreateMatrix (probabilities, matrix, counter+1, dim)
+# This is saying that the probability of the transition matrix is calculated according to the
+###################################################################################################################################
+goSquareProbabilities = [0]*40
+goSquareProbabilities[2:13] = CalculateRollProbabilites()
+rollMatrix = np.zeros((40, 40))
+rollMatrix[:,0] = goSquareProbabilities
+
+CreateMatrix(goSquareProbabilities, rollMatrix, 1, 40)
+print(goSquareProbabilities)
+
+######################################################################################################################################
+
+######################################################################################################################################
+Gospacerow = [1] + [0]*39
+GospaceMatrix = np.zeros((40, 40))
+GospaceMatrix[0] = Gospacerow
+CreateMatrix(Gospacerow, GospaceMatrix, 1, 40)
+print(Gospacerow)
+######################################################################################################################################
+finalMatrix = np.matmul(GospaceMatrix,rollMatrix)
+eigenVector = la.eig(finalMatrix)[1]
+steadyStateVec = eigenVector[:,0]
+steadyStateVec = steadyStateVec/sum(steadyStateVec)
+
+for element in steadyStateVec:
+    print (element)
+
